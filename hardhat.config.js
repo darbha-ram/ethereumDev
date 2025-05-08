@@ -1,14 +1,19 @@
+require("./sabliertasks.config")
 require("@nomicfoundation/hardhat-ethers");
 
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
+
+// import 'sabliertasks.config.js';
 
 //
 // Ramd: this is a copy of opencbdc-tx/scripts/hardhat.config.js, with a few changes:
 // 1. compiler version changed from "0.8.17" to "0.8.24", to allow newer Solidity code compilation
 // 2. added "hardhat" and "localhost" networks, to allow EVM testing locally in Hardhat
 // 3. added 2nd account in 'opencbdc' network for contracts where 2 signers are needed, e.g., escrow.
+// 4. sabliertasks.config.js is included _before_ the customary include of hardhat-ethers
 //
+
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
