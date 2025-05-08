@@ -15,7 +15,21 @@ contract FlowStreamCreator {
     ISablierFlow public immutable FLOW;
     address      public immutable RECEIVER;
 
+    //
+    // This contract 'binds' to the given Sablier Flow and ERC20 contracts, and a
+    // a given receiver. Thereafter, creation of a new stream uses that ERC20 as
+    // currency with that Flow, with that receiver as beneficiary, with a fixed RPS.
+    //
+
     constructor(address myFlowAddr, address myErc20, address myReceiver) {
+
+        // Note: input args are plain 'address' types, which are being cast 
+        //     flowFact = await ethers.getContractFactory("MySablierFlow")
+        //     flowCon  = await flowFact.attach('0x88446cad8e1571065b22578d94c4f72425b4dec8')
+        //       or
+        //     flowCon  = await flowFact.attach(myFlowAddr)
+
+
         FLOW     = ISablierFlow(myFlowAddr);
         MITCOIN  = IERC20(myErc20);
         RECEIVER = myReceiver;
@@ -45,7 +59,7 @@ contract FlowStreamCreator {
         // Transfer the provided amount of tokens to this contract
         MITCOIN.transferFrom(msg.sender, address(this), depositAmount);
 
-        // Approve the Flow contract to spend DAI
+        // Approve the Flow contract to spend MitCoin
         MITCOIN.approve(address(FLOW), depositAmount);
 
         // Create the flow stream using the `createAndDeposit` function,
@@ -63,7 +77,7 @@ contract FlowStreamCreator {
     }
 
     function myver() public pure returns(string memory) {
-        return "7May.1150";
+        return "7May.1559";
     }
 
 }
