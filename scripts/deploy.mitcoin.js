@@ -13,7 +13,7 @@ async function main() {
     console.log("*** Got contract factory MITCoin. calling deploy() ...");
     const mitcoin = await contr.deploy({gasLimit: 210000});
 
-    console.log("After deloy, MITCoin contract:", await mitcoin.getAddress());
+    console.log("After deploy, MITCoin contract:", await mitcoin.getAddress());
 
   }
 
