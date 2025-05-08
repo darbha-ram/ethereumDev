@@ -31,7 +31,7 @@ async function main() {
     // MITCoin - this is ERC20 currency for the Sablier Flow stream
     //
     console.log("--> Deploying MITCoin ...");
-    const mitcoincon = await ethers.deployContract("MITCoin", [], {gasLimit: 100000});
+    const mitcoincon = await ethers.deployContract("MITCoin", [], {gasLimit: 29888000});
     const mitcoinaddr = await mitcoincon.getAddress();
     console.log("-------------------------------------------------------------------");
     console.log("MITCoin address:", mitcoinaddr);
@@ -41,7 +41,7 @@ async function main() {
     // MyFlowNFTDesc - needed to instantiate SablierFlow contract, so deploy this first
     //
     console.log("--> Deploying MyFlowNFTDesc ...");
-    const nftdesccon = await ethers.deployContract("MyFlowNFTDesc", {gasLimit: 210000});
+    const nftdesccon = await ethers.deployContract("MyFlowNFTDesc", {gasLimit: 29888000});
     const nftdescaddr = await nftdesccon.getAddress();
     console.log("-------------------------------------------------------------------");
     console.log("MyFlowNFTDesc contract:", nftdescaddr);
@@ -55,9 +55,9 @@ async function main() {
     console.log("Deploying MySablierFLow ...");
     //const flowfact = await ethers.getContractFactory("MySablierFlow");
     //console.log("--> Got factory MySablier. Calling deploy() ...");
-    //const flowcont = await flowfact.deploy([, nftdescaddr], {gasLimit: 210000});
+    //const flowcont = await flowfact.deploy([, nftdescaddr], {gasLimit: 29888000});
     const flowcon = await ethers.deployContract("MySablierFlow", [mysig, nftdescaddr],
-        {gasLimit: 210000});
+        {gasLimit: 29888000});
     const flowaddr = await flowcon.getAddress();
     console.log("-------------------------------------------------------------------");
     console.log("MySablierFLow contract:", flowaddr);
@@ -69,7 +69,7 @@ async function main() {
     //
     console.log("Deploying FlowStreamCreator ...");
     const creatorcon = await ethers.deployContract("FlowStreamCreator", [flowaddr, mitcoinaddr, recvr],
-        {gasLimit: 210000});
+        {gasLimit: 29888000});
     const creatoraddr = await creatorcon.getAddress();
     console.log("-------------------------------------------------------------------");
     console.log("StreamCreator contract:", creatoraddr);
