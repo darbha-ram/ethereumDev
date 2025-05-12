@@ -68,7 +68,7 @@ async function main() {
     // FlowStreamCreator
     //
     console.log("Deploying FlowStreamCreator ...");
-    const creatorcon = await ethers.deployContract("FlowStreamCreator", [flowaddr, mitcoinaddr, recvr],
+    const creatorcon = await ethers.deployContract("FlowStreamCreator", [flowaddr, mitcoinaddr],
         {gasLimit: 29888000});
     const creatoraddr = await creatorcon.getAddress();
     console.log("-------------------------------------------------------------------");
