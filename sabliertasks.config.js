@@ -28,7 +28,7 @@ const FLOWCREATOR_CONTRACT_ADDR   = vars.get("FLOWCREATOR_CONTRACT_ADDR");
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
-task("sab_status", "Get status of specified Sablier Flow stream")
+task("sab_status", "Get status of given Sablier Flow stream")
     .addParam("streamid", "Id of the stream to query")
     .setAction(async (taskArgs) => {
         console.log("Retrieving status of stream: ", taskArgs.streamid);
@@ -73,7 +73,7 @@ task("sab_last", "Get last stream created and its receiver")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
-task("sab_totalDebt", "Get total debt of specified Sablier Flow stream")
+task("sab_totalDebt", "Get total debt of given Sablier Flow stream")
     .addParam("streamid", "Id of the stream to query")
     .setAction(async (taskArgs) => {
         console.log("Retrieving total debt of stream: ", taskArgs.streamid);
@@ -88,7 +88,7 @@ task("sab_totalDebt", "Get total debt of specified Sablier Flow stream")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
-task("sab_uncoveredDebt", "Get uncovered debt of specified Sablier Flow stream")
+task("sab_uncoveredDebt", "Get uncovered debt of given Sablier Flow stream")
     .addParam("streamid", "Id of the stream to query")
     .setAction(async (taskArgs) => {
         console.log("Retrieving uncovered debt of stream: ", taskArgs.streamid);
@@ -103,7 +103,7 @@ task("sab_uncoveredDebt", "Get uncovered debt of specified Sablier Flow stream")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
-task("sab_coveredDebt", "Get covered debt of specified Sablier Flow stream")
+task("sab_coveredDebt", "Get covered debt of given Sablier Flow stream")
 .addParam("streamid", "Id of the stream to query")
 .setAction(async (taskArgs) => {
     console.log("Retrieving covered debt of stream: ", taskArgs.streamid);
@@ -126,10 +126,10 @@ task("sab_coveredDebt", "Get covered debt of specified Sablier Flow stream")
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
-task("sab_createStream", "Create a new Sablier Flow stream")
+task("sab_create", "Create a new Sablier Flow stream")
     .addParam("receiver", "Address of receiver")
     .setAction(async (taskArgs) => {
-        console.log("sab_createStream");
+        console.log("sab_create");
 
         // connect to FlowStreamCreator contract already deployed
         const creatorFact = await ethers.getContractFactory("FlowStreamCreator");
@@ -159,5 +159,107 @@ task("sab_createStream", "Create a new Sablier Flow stream")
 });
 
 
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+task("sab_pause", "Pause the given Sablier Flow stream")
+    .addParam("streamid", "Id of the stream to pause")
+    .setAction(async (taskArgs) => {
+        console.log("Pausing stream: ", taskArgs.streamid);
+
+        const creatorFact = await ethers.getContractFactory("FlowStreamCreator");
+        const creatorCon = await creatorFact.attach(FLOWCREATOR_CONTRACT_ADDR);
+        const tx = await creatorCon.pauseFlowStream(taskArgs.streamid, {gasLimit: 2888000});
+
+        // Flow.pause() must be invoked by the address set as the stream 'sender' at
+        // creation time. To allow this contract to invoke pause, set it's address as the
+        // sender above.
+        
+        const rec = await tx.wait();
+        console.log("Tx receipt status: ", rec.status);
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+task("sab_restart", "Restart the given Sablier Flow stream")
+    .addParam("streamid", "Id of the stream to restart")
+    .setAction(async (taskArgs) => {
+        console.log("Restarting stream: ", taskArgs.streamid);
+
+        // connect to FlowCreator contract - knows RPS and receiver
+        const creatorFact = await ethers.getContractFactory("FlowStreamCreator");
+        const creatorCon = await creatorFact.attach(FLOWCREATOR_CONTRACT_ADDR);
+        const tx = await creatorCon.restartFlowStream(taskArgs.streamid, {gasLimit: 2888000});
+
+        const rec = await tx.wait();
+        console.log("Tx receipt status: ", rec.status);
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+task("sab_deposit", "Deposit into the given Sablier Flow stream")
+    .addParam("streamid", "Id of the stream to deposit to")
+    .addParam("numcoins", "number of coins to deposit e.g., 5")
+    .setAction(async (taskArgs) => {
+        console.log("Depositing to stream: ", taskArgs.streamid);
+
+        // connect to FlowCreator contract (knows the hardcoded RPS)
+        const creatorFact = await ethers.getContractFactory("FlowStreamCreator");
+        const creatorCon = await creatorFact.attach(FLOWCREATOR_CONTRACT_ADDR);
+
+        const tx = await creatorCon.depositFlowStream(taskArgs.streamid, taskArgs.numcoins, {gasLimit: 29888000});
+        const rec = await tx.wait();
+        console.log("Tx receipt status: ", rec.status);
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+task("sab_withdraw", "Withdraw from the given Sablier Flow stream")
+    .addParam("streamid", "Id of the stream to withdraw from")
+    .addParam("numcoins", "number of coins to withdraw e.g., 5")
+    .setAction(async (taskArgs) => {
+        console.log("Withdrawing from stream: ", taskArgs.streamid);
+
+        // connect to FlowCreator contract (knows the hardcoded RPS)
+        const creatorFact = await ethers.getContractFactory("FlowStreamCreator");
+        const creatorCon = await creatorFact.attach(FLOWCREATOR_CONTRACT_ADDR);
+
+        const tx = await creatorCon.withdrawFlowStream(taskArgs.streamid, taskArgs.numcoins, {gasLimit: 29888000});
+        const rec = await tx.wait();
+        console.log("Tx receipt status: ", rec.status);
+});
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+task("sab_mint", "Mint given #MITCoins to the given address")
+    .addParam("receiver", "address to mint coins to")
+    .addParam("numcoins", "number of coins to mint e.g., 5")
+    .setAction(async (taskArgs) => {
+        console.log("Minting coins to: ", taskArgs.receiver);
+
+        // connect to ERC20 contract
+        const mitFact = await ethers.getContractFactory("MITCoin");
+        const mitCon = await mitFact.attach(MITCOIN_CONTRACT_ADDR);
+
+        const tx = await mitCon.mint(taskArgs.receiver, ethers.parseUnits(taskArgs.numcoins),
+            {gasLimit: 29888000});
+        const rec = await tx.wait();
+        console.log("Tx receipt status: ", rec.status);
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+task("sab_balance", "Retrieve balance of given address in #MITCoins")
+    .addParam("addr", "address to query balance of")
+    .setAction(async (taskArgs) => {
+        console.log("Finding balance of: ", taskArgs.addr);
+
+        // connect to ERC20 contract
+        const mitFact = await ethers.getContractFactory("MITCoin");
+        const mitCon = await mitFact.attach(MITCOIN_CONTRACT_ADDR);
+
+        const tx = await mitCon.balanceOf(taskArgs.addr, {gasLimit: 29888000});
+        console.log("Balance (token decimals) : ", tx);
+});
 
 
